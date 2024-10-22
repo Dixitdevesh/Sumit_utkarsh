@@ -1,4 +1,4 @@
-# Hotel Management System
+#d Hotel Management System
 
 # Initialize empty stacks for bookings, check-ins, and services
 bookings = []
