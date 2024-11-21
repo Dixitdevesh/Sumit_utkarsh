@@ -1,12 +1,19 @@
-#d Hotel Management System
 
-# Initialize empty stacks for bookings, check-ins, and services
 bookings = []
 check_ins = []
 services = []
 bills = {}
+def display():
+    
+    print("=" * 60)
+    print(" " * 15 + "KANHA MAKHAN PUBLIC SCHOOL")
+    print(" " * 10 + "PROJECT: HOTEL MANAGEMENT SYSTEM")
+    print("=" * 60)
+    print("Student Name: Sumit Kumar")
+    print("Assisted By: Utkarsh Sharma")
+    print("=" * 60)
 
-# Initialize room details
+
 rooms = {
     "101": {"type": "single", "price": 100, "available": True},
     "102": {"type": "double", "price": 200, "available": True},
@@ -15,13 +22,13 @@ rooms = {
     "105": {"type": "double", "price": 200, "available": True},
 }
 
-# Initialize additional data structures for reporting
-occupancy_history = []  # Stack to track room occupancy changes
-revenue_stack = []      # Stack to track revenue entries
-service_usage_stack = []  # Stack to track service usage
+
+occupancy_history = []  
+revenue_stack = []      
+service_usage_stack = []  
 
 def add_room():
-    """Add a new room to the hotel."""
+
     room_number = input("Enter room number: ")
     if room_number in rooms:
         print("Room number already exists.")
@@ -39,7 +46,7 @@ def add_room():
     print(f"Room {room_number} added successfully.")
 
 def view_rooms():
-    """View all rooms with their details."""
+    
     print("\n--- Room Details ---")
     for room, details in sorted(rooms.items()):
         status = "Available" if details['available'] else "Occupied"
@@ -47,22 +54,22 @@ def view_rooms():
     print("---------------------\n")
 
 def update_room_availability(room_number, availability):
-    """Update the availability status of a room."""
+    
     if room_number in rooms:
         rooms[room_number]["available"] = availability
-        # Track occupancy history
+        
         occupancy_history.append({"room_number": room_number, "status": availability})
     else:
         print("Room not found.")
 
 def book_room():
-    """Book an available room."""
+
     print("\n--- Book a Room ---")
     guest_name = input("Enter guest name: ").strip()
     contact_details = input("Enter contact details: ").strip()
     room_type = input("Enter room type to book (single, double, suite): ").lower()
     
-    # Find available rooms of the desired type
+    
     available_rooms = [room for room, details in rooms.items() if details["type"] == room_type and details["available"]]
     
     if not available_rooms:
@@ -91,12 +98,12 @@ def book_room():
         "contact_details": contact_details,
         "duration": duration
     }
-    bookings.append(booking)  # Push to bookings stack
+    bookings.append(booking)  
     update_room_availability(room_number, False)
     print(f"Room {room_number} booked successfully for {guest_name}.\n")
 
 def view_bookings():
-    """View all current bookings."""
+
     print("\n--- Current Bookings ---")
     if not bookings:
         print("No current bookings.")
@@ -106,10 +113,10 @@ def view_bookings():
     print("------------------------\n")
 
 def cancel_booking():
-    """Cancel the most recent booking."""
+    
     print("\n--- Cancel Booking ---")
     if bookings:
-        last_booking = bookings.pop()  # Pop from bookings stack
+        last_booking = bookings.pop()  
         room_number = last_booking["room_number"]
         update_room_availability(room_number, True)
         print(f"Cancelled booking for {last_booking['guest_name']} in room {room_number}.\n")
@@ -117,11 +124,11 @@ def cancel_booking():
         print("No bookings to cancel.\n")
 
 def check_in():
-    """Check in a guest."""
+    
     print("\n--- Check-In Guest ---")
     room_number = input("Enter room number: ").strip()
     if room_number in rooms and not rooms[room_number]["available"]:
-        # Find the booking for this room
+    
         booking = next((b for b in bookings if b["room_number"] == room_number), None)
         if not booking:
             print("No booking found for this room.")
@@ -131,24 +138,22 @@ def check_in():
             "room_number": room_number,
             "guest_name": guest_name
         }
-        check_ins.append(check_in_record)  # Push to check-ins stack
+        check_ins.append(check_in_record)  
         print(f"Guest {guest_name} checked into room {room_number} successfully.\n")
     else:
         print("Room not available or not booked.\n")
 
 def check_out():
-    """Check out a guest."""
+
     print("\n--- Check-Out Guest ---")
     if check_ins:
-        last_check_in = check_ins.pop()  # Pop from check-ins stack
+        last_check_in = check_ins.pop()  
         room_number = last_check_in["room_number"]
         guest_name = last_check_in["guest_name"]
-        
-        # Find the booking corresponding to this check-in
         booking = next((b for b in bookings if b["room_number"] == room_number and b["guest_name"] == guest_name), None)
         if booking:
             total_charge = rooms[room_number]["price"] * booking["duration"]
-            # Calculate additional service charges
+    
             additional_services = [s for s in services if s["room_number"] == room_number]
             service_total = sum(service["cost"] for service in additional_services)
             total_charge += service_total
@@ -157,15 +162,15 @@ def check_out():
                 "service_charge": service_total,
                 "total": total_charge
             }
-            # Remove the booking as it's completed
+    
             bookings.remove(booking)
-            # Update room availability
+            
             update_room_availability(room_number, True)
-            # Track revenue
+            
             revenue_stack.append(total_charge)
             print(f"Guest {guest_name} checked out from room {room_number} successfully.")
             print(f"Total Charge: Room - ${rooms[room_number]['price'] * booking['duration']}, Services - ${service_total}, Total - ${total_charge}\n")
-            # Remove services used by this guest
+        
             services[:] = [s for s in services if s["room_number"] != room_number]
         else:
             print("No corresponding booking found for this check-in.\n")
@@ -173,7 +178,7 @@ def check_out():
         print("No guests to check out.\n")
 
 def add_service():
-    """Add an additional service to a room."""
+
     print("\n--- Add Service ---")
     room_number = input("Enter room number: ").strip()
     if room_number not in rooms:
@@ -201,7 +206,7 @@ def add_service():
     print(f"Service '{service}' added to room {room_number} successfully.\n")
 
 def view_services():
-    """View all additional services availed."""
+    
     print("\n--- Additional Services ---")
     if not services:
         print("No additional services availed.")
@@ -211,7 +216,6 @@ def view_services():
     print("----------------------------\n")
 
 def view_bills():
-    """View all generated bills."""
     print("\n--- Bills ---")
     if not bills:
         print("No bills generated yet.")
@@ -224,7 +228,7 @@ def view_bills():
     print("--------------\n")
 
 def occupancy_report():
-    """Generate occupancy report."""
+
     print("\n--- Occupancy Report ---")
     if not occupancy_history:
         print("No occupancy changes recorded.")
@@ -236,14 +240,13 @@ def occupancy_report():
     print("-------------------------\n")
 
 def revenue_report():
-    """Generate revenue report."""
+    
     print("\n--- Revenue Report ---")
     total_revenue = sum(revenue_stack)
     print(f"Total Revenue: ${total_revenue}\n")
     print("------------------------\n")
 
 def service_usage_report():
-    """Generate service usage report."""
     print("\n--- Service Usage Report ---")
     if not service_usage_stack:
         print("No services have been used.")
@@ -257,7 +260,7 @@ def service_usage_report():
     print("-----------------------------\n")
 
 def undo_last_operation():
-    """Undo the last booking or service operation."""
+
     print("\n--- Undo Last Operation ---")
     if bookings:
         last_booking = bookings.pop()
@@ -272,9 +275,11 @@ def undo_last_operation():
         print("No operations to undo.\n")
 
 def main_menu():
-    """Display the main menu and handle user choices."""
+    
     while True:
+        display()
         print("========== Hotel Management System ==========")
+        
         print("1. Add Room")
         print("2. View Rooms")
         print("3. Book Room")
