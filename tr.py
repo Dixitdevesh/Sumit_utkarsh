@@ -1,4 +1,4 @@
-
+import csv 
 bookings = []
 check_ins = []
 services = []
@@ -22,6 +22,57 @@ rooms = {
     "105": {"type": "double", "price": 200, "available": True},
 }
 
+
+def save_data_to_csv():
+  
+    with open(file_name, mode="w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(["type", "data"])
+
+      
+        for room_number, details in rooms.items():
+            writer.writerow(["rooms", f"{room_number},{details['type']},{details['price']},{details['available']}"])
+
+        
+        for booking in bookings:
+            writer.writerow(["bookings", f"{booking['room_number']},{booking['guest_name']},{booking['contact_details']},{booking['duration']}"])
+
+      
+        for service in services:
+            writer.writerow(["services", f"{service['room_number']},{service['service']},{service['cost']}"])
+
+      
+        for guest_name, charges in bills.items():
+            writer.writerow(["bills", f"{guest_name},{charges['room_charge']},{charges['service_charge']},{charges['total']}"])
+
+    print("Data saved successfully to CSV.\n")
+
+
+def load_data_from_csv():
+    
+    try:
+        with open(file_name, mode="r") as file:
+            reader = csv.reader(file)
+            next(reader)  
+
+            for row in reader:
+                data_type, data = row
+                if data_type == "rooms":
+                    room_number, room_type, price, available = data.split(",")
+                    rooms[room_number] = {"type": room_type, "price": float(price), "available": available == "True"}
+                elif data_type == "bookings":
+                    room_number, guest_name, contact_details, duration = data.split(",")
+                    bookings.append({"room_number": room_number, "guest_name": guest_name, "contact_details": contact_details, "duration": int(duration)})
+                elif data_type == "services":
+                    room_number, service, cost = data.split(",")
+                    services.append({"room_number": room_number, "service": service, "cost": float(cost)})
+                elif data_type == "bills":
+                    guest_name, room_charge, service_charge, total = data.split(",")
+                    bills[guest_name] = {"room_charge": float(room_charge), "service_charge": float(service_charge), "total": float(total)}
+
+        print("Data loaded successfully from CSV.\n")
+    except FileNotFoundError:
+        print("No previous data file found. Starting fresh.\n")
 
 occupancy_history = []  
 revenue_stack = []      
